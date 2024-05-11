@@ -1,0 +1,223 @@
+# Install and load necessary packages
+library(e1071)
+library(mclust)
+library(cluster)
+
+#Data Input
+library(readxl)
+Data1 <- read_excel("skripsi project/DATA SAMUDRA INDONESIA/Jurnal Sopus/Lombok Conference 2024/Data Sampah.xlsx", 
+                          sheet = "RekapAVG")
+View(Data1)
+
+
+# Generate simulated data
+set.seed(123)
+n <- 200  # number of samples
+m <- 9    # number of features
+k <- 2    # number of clusters
+
+view1 <- as.matrix(Data1[2])
+view2 <- as.matrix(Data1[3])
+view3 <- as.matrix(Data1[4])
+view4 <- as.matrix(Data1[5])
+view5 <- as.matrix(Data1[6])
+view6 <- as.matrix(Data1[7])
+view7 <- as.matrix(Data1[8])
+view8 <- as.matrix(Data1[9])
+view9 <- as.matrix(Data1[10])
+
+#Stat Descriptive
+library(psych)
+stat.desk<-describe(Data1[2:10])
+
+# Perform Fuzzy C-Means for each view
+fcm_view1 <- fanny(view1, k)
+fcm_view2 <- fanny(view2, k)
+fcm_view3 <- fanny(view3, k)
+fcm_view4 <- fanny(view4, k)
+fcm_view5 <- fanny(view5, k)
+fcm_view6 <- fanny(view6, k)
+fcm_view7 <- fanny(view7, k)
+fcm_view8 <- fanny(view8, k)
+fcm_view9 <- fanny(view9, k)
+
+# Plot clusters for each view
+plot_clusters <- function(fcm_result, view_number) {
+  # Extract cluster membership
+  cluster <- fcm_result$membership
+  
+  # Plot clusters
+  plot(cluster, pch = 19, col = cluster, xlab = "Data Points", ylab = "Cluster Membership", main = paste0("Cluster Plot for View ", view_number))
+}
+
+# Plot clusters for each view
+par(mfrow = c(3, 3)) # Arrange plots in a 3x3 grid
+plot_clusters(fcm_view1, 1)
+plot_clusters(fcm_view2, 2)
+plot_clusters(fcm_view3, 3)
+plot_clusters(fcm_view4, 4)
+plot_clusters(fcm_view5, 5)
+plot_clusters(fcm_view6, 6)
+plot_clusters(fcm_view7, 7)
+plot_clusters(fcm_view8, 8)
+plot_clusters(fcm_view9, 9)
+
+
+
+
+
+# Combine cluster assignments from all views
+cluster_data <- cbind(
+  fcm_view1$membership,
+  fcm_view2$membership,
+  fcm_view3$membership,
+  fcm_view4$membership,
+  fcm_view5$membership,
+  fcm_view6$membership,
+  fcm_view7$membership,
+  fcm_view8$membership,
+  fcm_view9$membership
+)
+
+#Data Tidak Terkendali
+library(readxl)
+Data2 <- read_excel("skripsi project/DATA SAMUDRA INDONESIA/Jurnal Sopus/Lombok Conference 2024/Data Sampah.xlsx", 
+                          sheet = "Demerit Control Tidak Terurai")
+View(Data2)
+
+## Calculate demerit points
+#Mean & sd view 1
+mean_value.view1 <- mean(Data2$`Tidak Terurai (Sisa makanan)`)
+sd_value.view1 <- sd(Data2$`Tidak Terurai (Sisa makanan)`)
+
+#Mean & sd view 2
+mean_value.view2 <- mean(Data2$`Tidak terurai (Kayu-Ranting)`)
+sd_value.view2 <- sd(Data2$`Tidak terurai (Kayu-Ranting)`)
+
+#Mean & sd view 3
+mean_value.view3 <- mean(Data2$`Tidak Terurai (Kertas-Karton)`)
+sd_value.view3 <- sd(Data2$`Tidak Terurai (Kertas-Karton)`)
+
+#Mean & sd view 4
+mean_value.view4 <- mean(Data2$`Tidak Terurai (Plastik)`)
+sd_value.view4 <- sd(Data2$`Tidak Terurai (Plastik)`)
+
+#Mean & sd view 5
+mean_value.view5 <- mean(Data2$`Tidak terurai (Logam)`)
+sd_value.view5 <- sd(Data2$`Tidak terurai (Logam)`)
+
+#Mean & sd view 6
+mean_value.view6 <- mean(Data2$`Tidak terurai (Kain)`)
+sd_value.view6 <- sd(Data2$`Tidak terurai (Kain)`)
+
+#Mean & sd view 7
+mean_value.view7 <- mean(Data2$`Tidak Terurai (Karet-Kulit)`)
+sd_value.view7 <- sd(Data2$`Tidak Terurai (Karet-Kulit)`)
+
+#Mean & sd view 8
+mean_value.view8 <- mean(Data2$`Tidak terurai (Kaca)`)
+sd_value.view8 <- sd(Data2$`Tidak terurai (Kaca)`)
+
+#Mean & sd view 9
+mean_value.view9 <- mean(Data2$`Tidak terurai (Lainnya)`)
+sd_value.view9 <- sd(Data2$`Tidak terurai (Lainnya)`)
+
+
+## Control limits 
+UCL.view1 <- mean_value.view1 +  3 * sd_value.view1
+LCL.view1 <- mean_value.view1 -  3 * sd_value.view1
+
+UCL.view2 <- mean_value.view2 +  3 * sd_value.view2
+LCL.view2 <- mean_value.view2 -  3 * sd_value.view2
+
+UCL.view3 <- mean_value.view3 +  3 * sd_value.view3
+LCL.view3 <- mean_value.view3 -  3 * sd_value.view3
+
+UCL.view4 <- mean_value.view4 +  3 * sd_value.view4
+LCL.view4 <- mean_value.view4 -  3 * sd_value.view4
+
+UCL.view5 <- mean_value.view5 +  3 * sd_value.view5
+LCL.view5 <- mean_value.view5 -  3 * sd_value.view5
+
+UCL.view6 <- mean_value.view6 +  3 * sd_value.view6
+LCL.view6 <- mean_value.view6 -  3 * sd_value.view6
+
+UCL.view7 <- mean_value.view7 +  3 * sd_value.view7
+LCL.view7 <- mean_value.view7 -  3 * sd_value.view7
+
+UCL.view8 <- mean_value.view8 +  3 * sd_value.view8
+LCL.view8 <- mean_value.view8 -  3 * sd_value.view8
+
+UCL.view9 <- mean_value.view9 +  3 * sd_value.view9
+LCL.view9 <- mean_value.view9 -  3 * sd_value.view9
+
+# Function to calculate membership value based on control limits
+membership_value <- function(x, LCL.view1, UCL.view1) {
+  if (x <= LCL.view1) {
+    return(1)
+  } else if (x >= UCL.view1) {
+    return(0)
+  } else {
+    return((UCL.view1 - x) / (UCL.view1 - LCL.view1))
+  }
+}
+
+# Calculate membership values for each data point
+membership_values.view1 <- sapply(Data2$`Tidak Terurai (Sisa makanan)`, membership_value, LCL = LCL.view1, UCL = UCL.view1)
+
+# Buat control chart
+library(qcc)
+qcc_chart.view1 <- qcc(Data2$`Tidak Terurai (Sisa makanan)`, 
+                            type = "xbar.one", 
+                            title = "Control Chart Food Residue Non Decomposable", 
+                            ylab = "Values", 
+                            xlab = "ID")
+
+qcc_chart.view2 <- qcc(Data2$`Tidak terurai (Kayu-Ranting)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Wood-Branches Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view3 <- qcc(Data2$`Tidak Terurai (Kertas-Karton)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Paper-Cardboard Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view4 <- qcc(Data2$`Tidak Terurai (Plastik)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Plastic Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+
+qcc_chart.view5 <- qcc(Data2$`Tidak terurai (Logam)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Metal Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view6 <- qcc(Data2$`Tidak terurai (Kain)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Cloth Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view7 <- qcc(Data2$`Tidak Terurai (Karet-Kulit)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Rubber-Leather Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view8 <- qcc(Data2$`Tidak terurai (Kaca)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Glass Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
+
+qcc_chart.view9 <- qcc(Data2$`Tidak terurai (Lainnya)`, 
+                       type = "xbar.one", 
+                       title = "Control Chart Others Non Decomposable", 
+                       ylab = "Values", 
+                       xlab = "ID")
